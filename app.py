@@ -30,7 +30,7 @@ SCOPES = " ".join([
     "https://www.googleapis.com/auth/spreadsheets",
 ])
 
-REDIRECT_URI = "https://mottaplotter-soporte.streamlit.app/"
+REDIRECT_URI = "https://mottaplotter-7naxgj7nlr6jmqudu4h5mk.streamlit.app/"
 
 APP_CONFIG = {
     "Ripley":         {"companyId": 131, "clickiemotaModel": 318},
