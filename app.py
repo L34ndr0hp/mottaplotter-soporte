@@ -14,8 +14,6 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 import re as _re_top
 
-from ggv2_calendar import es_config_ggv2, build_calendar_html
-
 # ─── Configuración de página ───────────────────────────────────────────────────
 st.set_page_config(
     page_title="MottaPlotter",
@@ -1462,8 +1460,7 @@ def main():
             "Vista del gráfico",
             ["Por día", "Por canal"],
             horizontal=True,
-            help="Por día: agrupa canales bajo cada fecha. Por canal: agrupa fechas bajo cada canal (estilo Motta Plotter clásico). "
-                 "Las configuraciones GGv2 siempre se muestran como calendario semanal."
+            help="Por día: agrupa canales bajo cada fecha. Por canal: agrupa fechas bajo cada canal (estilo Motta Plotter clásico)."
         )
 
         json_file = st.file_uploader("O sube un JSON manualmente", type=["json"],
@@ -1525,27 +1522,17 @@ def main():
 
                         fi = fecha_inicio
                         ff = fecha_fin
-                        # GGv2 (json_version v4.x): calendario semanal; GGv1: gráfico clásico
-                        es_ggv2 = es_config_ggv2(config_data)
-                        if es_ggv2:
-                            html_chart, chart_w, chart_h = build_calendar_html(
-                                config_data, sucursal, fi, ff,
-                                solicitud_data=st.session_state.get("solicitud_data"),
-                            )
-                        else:
-                            html_chart, chart_w, chart_h = build_chart_html(
-                                config_data, sucursal, fi, ff,
-                                solicitud_data=st.session_state.get("solicitud_data"),
-                                view_mode="dia" if vista == "Por día" else "canal"
-                            )
+                        html_chart, chart_w, chart_h = build_chart_html(
+                            config_data, sucursal, fi, ff,
+                            solicitud_data=st.session_state.get("solicitud_data"),
+                            view_mode="dia" if vista == "Por día" else "canal"
+                        )
                         st.session_state["chart_html"]   = html_chart
                         st.session_state["chart_w"]      = chart_w
                         st.session_state["chart_h"]      = chart_h
-                        st.session_state["chart_ggv2"]   = es_ggv2
                         st.session_state["config_data"]  = config_data
                         st.session_state["sucursal_sel"] = sucursal
-                        st.success("✅ Calendario generado (formato GGv2)" if es_ggv2
-                                   else "✅ Gráfico generado")
+                        st.success("✅ Gráfico generado")
                     except Exception as e:
                         st.error(f"Error: {e}")
 
@@ -1653,8 +1640,7 @@ def main():
         st.subheader(f"Programación — {st.session_state.get('sucursal_sel', '')}")
         st.components.v1.html(
             st.session_state["chart_html"],
-            height=(st.session_state["chart_h"] if st.session_state.get("chart_ggv2")
-                    else min(st.session_state["chart_h"] + 70, 900)),
+            height=min(st.session_state["chart_h"] + 70, 900),
             scrolling=True,
         )
 
